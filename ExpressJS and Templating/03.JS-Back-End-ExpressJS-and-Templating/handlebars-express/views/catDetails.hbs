@@ -1,0 +1,12 @@
+<h1>{{cat.name}}</h1>
+
+{{#if cat.imageUrl}}
+<img src="/{{cat.imageUrl}}" alt="cat image">
+{{else}}
+<p>No cat Image</p>
+{{/if}}
+
+<form action="/cats/{{cat.name}}/upload" method="POST" enctype="multipart/form-data">
+    <input type="file" name="photo">
+    <input type="submit" value="Upload">
+</form>

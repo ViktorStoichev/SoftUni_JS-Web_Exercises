@@ -1,0 +1,16 @@
+<h1>Cats Page</h1>
+
+<ul>
+    {{#each cats}}
+        <li>
+            <a href="/cats/{{name}}">
+                {{name}} - {{age}} years old - {{breed}} breed
+            </a>
+        </li>
+        {{#if forSale}}
+            <strong>This cat is for SALE!</strong>
+        {{/if}}
+    {{else}}
+        <p>No Cats for Now!</p>
+    {{/each}}
+</ul>

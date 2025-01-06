@@ -1,0 +1,54 @@
+import { jwt } from "../lib/jwt.js";
+import User from "../models/User.js";
+import bcrypt from 'bcrypt';
+
+const authService = {
+    async register(username, email, password, rePassword) {
+        const user = await User.findOne({ $or: [{ email }, { username }] });
+        // const user = User.findOne().or([{ email }, { username }]);
+        if (user) {
+            throw new Error('User already exists!');
+        }
+
+        if (password !== rePassword) {
+            throw new Error('Password\'s don\'t match!');
+        }
+
+        const newUser = await User.create({ username, email, password });
+
+        return this.generateToken(newUser);
+    },
+    async login(username, password) {
+        // Get user from db
+        const user = await User.findOne({ username });
+
+        // Throw error if user doesn't exists
+        if (!user) {
+            throw new Error('Invalid user or password!');
+        };
+
+        // Check password
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) {
+            throw new Error('Invalid user or password!');
+        }
+
+        return this.generateToken(user);
+    },
+    async generateToken(user) {
+        // Generate token
+        const payload = {
+            _id: user._id,
+            email: user.email,
+            username: user.username,
+        };
+
+        const header = { expiresIn: '2h' };
+        const token = await jwt.sign(payload, process.env.JWT_SECRET, header);
+
+        // Return token
+        return token;
+    }
+};
+
+export default authService;
